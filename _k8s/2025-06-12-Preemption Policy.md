@@ -79,3 +79,43 @@ preemptionPolicy: Never # 축출 금지 명시적 설정
 > - **`PreemptLowerPriority`**: 긴급한 워크로드에 사용 (예: 결제 시스템).  
 > - **`Never`**: 리소스 확보 시까지 기다려도 되는 작업에 사용 (예: 야간 배치 처리).  
 > - 정책 선택은 **워크로드의 중요성과 내구성 요구사항**에 따라 결정.
+>
+
+## **※ 유용한 priorityClass 비교 명령어**  
+
+```bash
+kubectl get pods -o custom-columns="NAME:.metadata.name,PRIORITY:.spec.priorityClassName"
+```
+
+### 1. 기본 동작
+```bash
+kubectl get pods
+```
+- 현재 네임스페이스에 있는 파드(Pod) 목록을 조회.
+
+### 2. 커스텀 칼럼 옵션
+```bash
+-o custom-columns="..."
+```
+- 출력할 컬럼(필드)을 직접 지정.
+- 커스텀 칼럼을 사용하면 기본 출력보다 원하는 정보만 선택적으로 볼 수 있음.
+
+### 3. 커스텀 칼럼 정의
+```bash
+NAME:.metadata.name
+```
+- 파드의 이름(.metadata.name)을 NAME 컬럼에 출력.
+```bash
+PRIORITY:.spec.priorityClassName
+```
+- 파드에 지정된 우선순위 클래스 이름(.spec.priorityClassName)을 PRIORITY 컬럼에 출력.
+
+### 4. 출력 예시
+```text
+NAME           PRIORITY
+my-pod-1       high-priority
+my-pod-2       <none>
+```
+- 첫 번째 컬럼: 파드 이름
+- 두 번째 컬럼: 파드에 할당된 우선순위 클래스 이름 (없으면 <none>)
+

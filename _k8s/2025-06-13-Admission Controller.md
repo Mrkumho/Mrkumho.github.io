@@ -112,4 +112,6 @@ kube-apiserver --enable-admission-plugins=NamespaceLifecycle,ResourceQuota
 ```bash
 kube-apiserver -h | grep enable-admission-plugins
 kubectl exec kube-apiserver-controlplane -n kube-system -- kube-apiserver -h | grep enable-admission-plugins
+kubectl describe pod kube-apiserver -n kube-system | grep "enable-admission-plugins"
+kubectl describe pod kube-apiserver-controlplane -n kube-system | grep "disable-admission-plugins"
 ```

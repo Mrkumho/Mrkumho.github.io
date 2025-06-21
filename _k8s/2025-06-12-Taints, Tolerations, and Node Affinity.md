@@ -53,4 +53,64 @@
 
 > **결론:**  
 > Taints & Tolerations와 Node Affinity를 함께 사용하여 노드와 파드의 배치를 완벽하게 제어할 수 있음.
+
+## Operator 옵션 정리
+
+쿠버네티스에서 Taint와 Toleration을 사용할 때,  
+`operator`는 **어떤 조건에서 toleration이 적용될지**를 결정합니다.
+
+---
+
+### operator: Exists
+
+- **의미:**  
+  - 해당 키(key)가 존재하는 모든 Taint에 대해 toleration이 적용.
+  - 값(value)은 무시.
+- **예시:**
+```yaml
+tolerations:
+  key: "node.kubernetes.io/not-ready"
+  operator: "Exists"
+  effect: "NoExecute"
 ```
+- **node.kubernetes.io/not-ready**라는 키가 있는 모든 Taint에 대해 toleration 적용
+
+### operator: Equal
+
+- **의미:**  
+- Taint의 키와 값이 모두 일치해야 toleration이 적용.
+- `value` 필드를 반드시 지정해야 함.
+- **예시:**
+```yaml
+tolerations:
+
+key: "example.com/special"
+operator: "Equal"
+value: "true"
+effect: "NoSchedule"
+```
+- **example.com/special=true**인 Taint에만 toleration 적용
+
+---
+
+| operator   | 의미                                            | value 필요? | 예시 적용 대상                  |
+|------------|------------------------------------------------|-------------|---------------------------------|
+| Exists     | 해당 키가 있는 모든 Taint에 적용                | No          | node.kubernetes.io/not-ready    |
+| Equal      | 키와 값이 모두 일치하는 Taint에만 적용          | Yes         | example.com/special=true        |
+
+---
+
+## 참고
+
+- **effect:**  
+- `NoSchedule`, `NoExecute`, `PreferNoSchedule` 등 Taint의 효과(Effect)도 함께 지정해야 함.
+- **실제 사용 예시:**  
+- **Exists**는 노드 상태(ready, not-ready, unreachable 등)와 같이 값이 없는 Taint에 주로 사용
+- **Equal**은 사용자 정의 Taint(예: 특정 노드에만 배포)에 주로 사용
+
+---
+
+## 정리
+
+- **operator: Exists** → 키가 있으면 toleration 적용
+- **operator: Equal** → 키와 값이 모두 일치해야 toleration 적용
